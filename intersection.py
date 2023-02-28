@@ -27,9 +27,9 @@ class IntersectionEnv(gym.Env):
         step()
 
     def step(self, action):
-        '''
+        """
         Take an action and return the new state, reward, and done
-        '''
+        """
 
         button_direction = action
 
@@ -38,7 +38,6 @@ class IntersectionEnv(gym.Env):
             self.boat_heading += 10
         elif button_direction == 0:
             self.boat_heading -= 10
-
 
         # update internal state
         # ...
@@ -64,10 +63,10 @@ class IntersectionEnv(gym.Env):
         return observation, self.total_reward, self.done, info
 
     def reset(self):
-        '''
+        """
         Reset the environment to the initial state
         (including the image)
-        '''
+        """
 
         self.done = False
 
