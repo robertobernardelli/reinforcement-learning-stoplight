@@ -1,4 +1,6 @@
 import time
+import cv2
+
 
 def step():
     # Takes step after fixed time
@@ -9,3 +11,7 @@ def step():
             k = cv2.waitKey(1)
         else:
             continue
+
+
+def nudge(pos, x_shift, y_shift):
+    return {n: (x + x_shift, y + y_shift) for n, (x, y) in pos.items()}
