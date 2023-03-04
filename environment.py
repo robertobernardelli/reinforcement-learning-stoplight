@@ -14,7 +14,7 @@ class Node:
         self.car_queue = []
 
 
-class WaitingNode(Node):
+class StoplightNode(Node):
     """
     Node that has a stoplight, where cars wait until the light turns green.
     Unlimited capacity for cars.
@@ -27,7 +27,7 @@ class WaitingNode(Node):
         self.pedestrian_queue = []
 
     def __repr__(self):
-        return f"WaitingNode{self.id}\nStoplight: {self.stoplight}\nCars: {len(self.car_queue)}\nPedestrians: {len(self.pedestrian_queue)}"
+        return f"StoplightNode{self.id}\nStoplight: {self.stoplight}\nCars: {len(self.car_queue)}\nPedestrians: {len(self.pedestrian_queue)}"
 
 
 class TransitionNode(Node):
@@ -45,6 +45,19 @@ class TransitionNode(Node):
     def __repr__(self):
         return f"TransitionNode{self.id}\nCars: {len(self.car_queue)}"
 
+class YieldNode(TransitionNode):
+    """
+    Special case of Transition node, between two Transition Nodes.
+    We need this when we want to simulate a car stopping in the middle of the intersection
+    for the right of way.
+    Limited capacity.
+    """
+
+    def __init__(self, id, max_capacity=2):
+        super().__init__(id, max_capacity)
+
+    def __repr__(self):
+        return f"YieldNode{self.id}\nCars: {len(self.car_queue)}"
 
 class EndingNode(Node):
     """
@@ -110,23 +123,74 @@ class Intersection:
         self.all_spawned_pedestrians = []
 
         # Configuration (could be loaded from a file)
-        A = WaitingNode(0, stoplight="red")
-        B = WaitingNode(1, stoplight="green")
-        C = TransitionNode(2)
-        D = EndingNode(3)
-
-        self.waiting_nodes = [A, B]
-        self.transition_nodes = [C]
+        A = StoplightNode('A', stoplight="green")
+        B = TransitionNode('B')
+        C = TransitionNode('C')
+        D = EndingNode('D')
+        E = EndingNode('E')
+        F = YieldNode('F')
+        G = TransitionNode('G')
+        H = EndingNode('H')
+        
+        I = StoplightNode('I', stoplight="green")
+        J = YieldNode('J')
+        K = TransitionNode('K')
+        L = EndingNode('L')
+        
+        M = StoplightNode('M', stoplight="red")
+        N = YieldNode('N')
+        
+        O = StoplightNode('O', stoplight="red")
+        P = YieldNode('P')
 
         self.G = nx.DiGraph()
-        self.G.add_node(A, pos=(0, 0))
-        self.G.add_node(B, pos=(1, 1))
-        self.G.add_node(C, pos=(0, 1))
-        self.G.add_node(D, pos=(0, 2))
+        
+        self.G.add_node(A, pos=(0.3, 0))
+        self.G.add_node(B, pos=(0.3, 0.1))
+        self.G.add_node(C, pos=(0.3, 0.2))
+        self.G.add_node(D, pos=(0.3, 0.3))
+        self.G.add_node(E, pos=(0.4, 0.1))
+        self.G.add_node(F, pos=(0.28, 0.18))
+        self.G.add_node(G, pos=(0.2, 0.2))
+        self.G.add_node(H, pos=(0.1, 0.2))
+        
+        self.G.add_node(I, pos=(0.2, 0.3))
+        self.G.add_node(J, pos=(0.22, 0.12))
+        self.G.add_node(K, pos=(0.2, 0.1))
+        self.G.add_node(L, pos=(0.2, 0))
+        
+        self.G.add_node(M, pos=(0.1, 0.1))
+        self.G.add_node(N, pos=(0.28, 0.12))
+        
+        self.G.add_node(O, pos=(0.4, 0.2))
+        self.G.add_node(P, pos=(0.22, 0.18))
+        
 
-        self.G.add_edge(A, C)
+        self.G.add_edge(A, B)
         self.G.add_edge(B, C)
         self.G.add_edge(C, D)
+        self.G.add_edge(B, E)
+        self.G.add_edge(B, F)
+        self.G.add_edge(F, G)
+        self.G.add_edge(G, H)
+        
+        self.G.add_edge(I, G)
+        self.G.add_edge(G, J)
+        self.G.add_edge(J, B)
+        self.G.add_edge(G, K)
+        self.G.add_edge(K, L)
+        
+        self.G.add_edge(M, K)
+        self.G.add_edge(K, N)
+        self.G.add_edge(N, C)
+        
+        self.G.add_edge(O, C)
+        self.G.add_edge(C, P)
+        self.G.add_edge(P, K)
+    
+        
+        self.waiting_nodes = [A, I, M, O]
+        self.transition_nodes = [B, C, F, G, J, K, N, P]
 
     def render(self):
         plt.close()
@@ -135,15 +199,16 @@ class Intersection:
         edges = self.G.edges()
         colors = [
             "g"
-            if (type(edge[0]) is WaitingNode and edge[0].stoplight == "green")
+            if (type(edge[0]) is StoplightNode and edge[0].stoplight == "green")
             or type(edge[0]) is TransitionNode
+            or type(edge[0]) is YieldNode   #TODO add condition for yield node
             else "r"
             for edge in edges
         ]
 
         pos = nx.get_node_attributes(self.G, "pos")
 
-        pos_nodes = nudge(pos, 0.08, -0.08)
+        pos_nodes = nudge(pos, 0.01, -0.01)
 
         # plt.figure(1,figsize=(4,4))
         nx.draw(
@@ -152,7 +217,7 @@ class Intersection:
         nx.draw_networkx_labels(
             self.G,
             pos=pos_nodes,
-            font_size=7,
+            font_size=5,
             horizontalalignment="left",
             verticalalignment="top",
         )
@@ -184,8 +249,8 @@ class Intersection:
         )
 
         ax = plt.gca()
-        ax.set_xlim([-0.5, 2])
-        ax.set_ylim([-0.5, 2.5])
+        #ax.set_xlim([-0.01, 1.1])
+        #ax.set_ylim([-0.01, 1.1])
 
         fig.canvas.draw()
         data = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
