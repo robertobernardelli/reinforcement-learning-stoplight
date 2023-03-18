@@ -130,8 +130,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-torino.csv
-utd19_u.csv
-.DS_Store
-.DS_Store
-.DS_Store
