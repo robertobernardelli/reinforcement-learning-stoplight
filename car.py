@@ -11,6 +11,8 @@ class Car:
         self.prev = None
         self.next_stop = next_stop
         self.next_stop.queue.add(self)
+        self.time = 0
+        self.kill = False
         
         self.speed = 2*LAMBDA
         self.max_speed = 4*LAMBDA
@@ -38,9 +40,15 @@ class Car:
         if self.next_stop.last == True and new_distance < KILL_DISTANCE:
             try:
                 self.prev.next = self.next_stop
+                if self.kill == True:
+                    return 0
+                else:
+                    return self.time
             except:
-                pass
-            return
+                if self.kill == True:
+                    return 0
+                else:
+                    return self.time
         
         #new stoplight
         if np.sum(np.sign(self.next_stop.pos - self.pos) + np.sign(self.direction)) == 0:
@@ -57,6 +65,7 @@ class Car:
         self.distance = new_distance
         self.lookahead = self.speed * 20
         self.pos = self.pos + (self.speed*self.direction)
+        return 0
 
 class Car_list:
     
