@@ -5,17 +5,15 @@ import numpy as np
 from car import *
 from stoplight import *
 import roads
-
-WIDTH = 800
-HEIGHT = 600
+from config import *
 
 pygame.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((MONITOR_WIDTH, MONITOR_HEIGHT))
 pygame.display.set_caption("Traffic Simulation")
 
 # Load background image
 background_image = pygame.image.load("map.jpeg")
-background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
+background_image = pygame.transform.scale(background_image, (MONITOR_WIDTH, MONITOR_HEIGHT))
 
 # create font object
 font = pygame.font.SysFont('Arial', 16)
@@ -28,7 +26,7 @@ while i < 100000:
             
     screen.blit(background_image, (0, 0))
     
-    for sl, cl in zip(roads.stl, roads.cal):
+    for sl, cl in zip(roads.stl.copy(), roads.cal.copy()):
         #stoplights
         stoplight = sl.head
         while stoplight != None:

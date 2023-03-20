@@ -11,6 +11,7 @@ class Car:
         self.prev = None
         self.next_stop = next_stop
         self.next_stop.queue.add(self)
+        self.time = 0
         
         self.speed = 2*LAMBDA
         self.max_speed = 4*LAMBDA
@@ -30,8 +31,12 @@ class Car:
                        math.dist(self.pos, self.next_stop.pos))
         else:
             return math.dist(self.pos, self.next.pos)
+        
+    def angle_between_vectors(self, a, b):
+        return np.arccos(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
     
     def step(self):
+        self.time += 1
         new_distance = self.determine_distance()
         
         #kill
@@ -40,10 +45,10 @@ class Car:
                 self.prev.next = self.next_stop
             except:
                 pass
-            return
+            return self.time
         
         #new stoplight
-        if np.sum(np.sign(self.next_stop.pos - self.pos) + np.sign(self.direction)) == 0:
+        if self.angle_between_vectors(self.next_stop.pos - self.pos, self.direction) > np.pi/2:
             self.next_stop.queue.remove(self)
             self.next_stop = self.next_stop.next
             self.next_stop.queue.add(self)
@@ -57,6 +62,7 @@ class Car:
         self.distance = new_distance
         self.lookahead = self.speed * 20
         self.pos = self.pos + (self.speed*self.direction)
+        return 0 #either 0 or the total time spent on this earth
 
 class Car_list:
     
