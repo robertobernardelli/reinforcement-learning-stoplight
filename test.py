@@ -1,11 +1,9 @@
 from environment import *
-from utils import *
 
-intersection1 = Intersection()
+intersection1 = Environment()
 
-for timestep in range(1000):
-    if timestep % 100 == 0:
-        intersection1.switch_stoplights()
+for timestep in range(2000):
+    if timestep % 500 == 0:
+        intersection1.step(switch_stoplights = True)
     intersection1.step()
     intersection1.render()
-    # time.sleep(0.005)
