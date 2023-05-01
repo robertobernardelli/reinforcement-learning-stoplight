@@ -8,16 +8,6 @@ class Car:
         self.pos = path[0].pos
         self.next = None
         self.prev = None
-<<<<<<< Updated upstream
-        self.next_stop = next_stop
-        self.next_stop.queue.add(self)
-        
-        self.speed = 2*LAMBDA
-        self.max_speed = 4*LAMBDA
-        self.acceleration = 0.02*LAMBDA
-        self.lookahead = self.speed * 20
-
-=======
         self.path = path
         self.list_index = 0 #which node of the path connects the current linked list of cars
         self.pos_index = 1 #node of the path the car is reffering to as next_node
@@ -27,7 +17,6 @@ class Car:
         self.direction = self.get_direction()
         self.time = 0
         self.killed = False
->>>>>>> Stashed changes
         
         self.speed = SPEED
         self.max_speed = MAX_SPEED
@@ -63,12 +52,6 @@ class Car:
         #kill
         if isinstance(self.next_node, nodes.FinalNode):
             try:
-<<<<<<< Updated upstream
-                self.prev.next = self.next_stop
-            except:
-                pass
-            return
-=======
                 self.path[self.list_index].car_list.remove_last(self)
                 self.list_index = self.pos_index
                 if self.killed:
@@ -81,7 +64,6 @@ class Car:
                 else:
                     self.killed = True
                     return self.time
->>>>>>> Stashed changes
         
         #new stoplight
         if self.angle_between_vectors(self.next_node.pos - self.pos, self.direction) > np.pi/2:
@@ -105,12 +87,8 @@ class Car:
         self.distance = new_distance
         self.lookahead = self.speed * 20
         self.pos = self.pos + (self.speed*self.direction)
-<<<<<<< Updated upstream
-
-=======
         return 0 #either 0 or the total time spent on this earth
     
->>>>>>> Stashed changes
 class Car_list:
     
     def __init__(self):

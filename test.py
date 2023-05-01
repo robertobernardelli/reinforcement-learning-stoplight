@@ -2,10 +2,10 @@ from environment import *
 import datetime
 import time
 
-intersection1 = Intersection()
+intersection1 = Environment()
 
-render = True
-fps_limiter = True
+render = False
+fps_limiter = False
 
 dt = datetime.datetime.now()
 for timestep in range(10000):
