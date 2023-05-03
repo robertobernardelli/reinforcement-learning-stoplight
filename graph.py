@@ -31,58 +31,79 @@ def create_edges(graph, nodelist):
 
 #List from 1 to 2 (straight) -> up
 a12 = InitialNode(point_converter(7.5857334281685,-10.4967569592598), 1) #C
-b12 = Node(point_converter(7.4292295576207,-8.7640819441928)) #T
+#b12 = Node(point_converter(7.4292295576207,-8.7640819441928)) #T
 c12 = Stoplight(point_converter(7.3698673333496,-6.9947783015048), red = True) #D1
 d12 = Node(point_converter(7.3440745573417,-6.3141842353067)) #P1
-e12 = ListNode(point_converter(7.3059460451904,-5.887408832075)) #O
+e12 = Node(point_converter(7.3059460451904,-5.887408832075)) #O #List
 f12 = Node(point_converter(7.2471840046297,-5.5478948199465)) #Q1
-g12 = ListNode(point_converter(7.1786370182653,-4.8757841472108)) #O2
+g12 = Node(point_converter(7.1786370182653,-4.8757841472108)) #O2 #List
 h12 = Node(point_converter(7.0779503764026,-3.9245860696794)) #Q
-i12 = ListNode(point_converter(7.0075517331237,-2.6399408667794)) #O1
+i12 = Node(point_converter(7.0075517331237,-2.6399408667794)) #O1 #List
 j12 = Node(point_converter(6.9212211549286,-0.4360088089096)) #U
-k12 = FinalNode(point_converter(6.8786675544329,0.336442187715), 1) #D
-nodelist_12 = [a12, b12, c12, d12, e12, f12, g12, h12, i12, j12, k12]
+k12 = FinalNode(point_converter(6.93086675544329,-0.036442187715), 1) #D
+nodelist_12 = [a12, c12, d12, e12, f12, g12, h12, i12, j12, k12] #b12 #f12,
 create_edges(G, nodelist_12)
 stoplights_list.append(c12)
+rendering_list.append(d12)
+rendering_list.append(e12)
+rendering_list.append(f12)
+rendering_list.append(g12)
+rendering_list.append(h12)
+rendering_list.append(i12)
+rendering_list.append(j12)
+rendering_list.append(k12)
 
 #List from 1 to 3 (turn left)
 a13 = ListNode(point_converter(7.0982450953271,-5.3228997856363)) #M1
 b13 = YieldNode(point_converter(6.9187550760409,-5.135784311697)) #R
 c13 = Node(point_converter(6.5335081648615,-4.937954816767)) #N
 d13 = Node(point_converter(5.5785243843548,-4.8449846298414)) #M
-e13 = ListNode(point_converter(4.0119539497933,-4.4808026920525)) #K
+e13 = Node(point_converter(4.0119539497933,-4.4808026920525)) #K #List
 f13 = Node(point_converter(2.2833441826018,-3.7828990624901)) #S
 g13 = Node(point_converter(0.6330931851997,-3.084519798628)) #L
-h13 = FinalNode(point_converter(-0.4361206568454,-2.6355857151185), 1) #H
-nodelist_13 = [f12, a13, b13, c13, d13, e13, f13, g13, h13]
+h13 = FinalNode(point_converter(0.4361206568454,-2.9355857151185), 1) #H
+nodelist_13 = [e12, a13, b13, c13, d13, e13, f13, g13, h13]
 create_edges(G, nodelist_13)
+rendering_list.append(a13)
+rendering_list.append(b13)
+rendering_list.append(c13)
+rendering_list.append(d13)
+rendering_list.append(e13)
+rendering_list.append(f13)
+rendering_list.append(g13)
+rendering_list.append(h13)
 
 #List from 1 to 4 (turn right)
 a14 = ListNode(point_converter(7.5600679848197,-6.0298329597677)) #E2
 b14 = Node(point_converter(8.2386059807778,-5.7668901650638)) #Z1
-c14 = ListNode(point_converter(8.934146482221,-5.7803271575225)) #S1
+c14 = Node(point_converter(8.934146482221,-5.7803271575225)) #S1 #List
 d14 = Node(point_converter(14.0354126046239,-5.8087016198999)) #G2
 e14 = FinalNode(point_converter(14.647289039332,-5.8176163982142), 1) #P
 nodelist_14 = [d12, a14, b14, c14, d14, e14]
 create_edges(G, nodelist_14)
-
+rendering_list.append(a14)
+rendering_list.append(b14)
+rendering_list.append(c14)
+rendering_list.append(d14)
+rendering_list.append(e14)
 
 #List from 2 to 1 (straight) - > down
 a21 = InitialNode(point_converter(6.3273454655618,-0.3134286624478), 1) #A1
-b21 = Node(point_converter(6.3789636333348,-1.5412004999807)) #W
+#b21 = Node(point_converter(6.3789636333348,-1.5412004999807)) #W
 c21 = Stoplight(point_converter(6.4838530928216,-3.5462890847714), red = True) #B1
 d21 = Node(point_converter(6.5154798332493,-4.3102801564131)) #C1
-e21 = ListNode(point_converter(6.5335081648615,-4.937954816767)) #N
+e21 = Node(point_converter(6.5335081648615,-4.937954816767)) #N #List
 f21 = Node(point_converter(6.5420046027074,-5.1970326566709)) #V1
-g21 = ListNode(point_converter(6.6528615596325,-6.1014224686689)) #L1
+g21 = Node(point_converter(6.6528615596325,-6.1014224686689)) #L1 #List
 h21 = Node(point_converter(6.7128857616537,-6.8337177333283)) #T1
 i21 = Node(point_converter(6.7609051232707,-8.2502889010302)) #E1
 j21 = Node(point_converter(6.8651027435212,-10.1514575323055)) #I1
-k21 = FinalNode(point_converter(6.9189751659345,-11.0009702155318), 1) #G
-nodelist_21 = [a21, b21, c21, d21, e21, f21, g21, h21, i21, j21, k21]
+k21 = FinalNode(point_converter(6.8789751659345,-10.3009702155318), 1) #G
+nodelist_21 = [a21, c21, d21, e21, f21, g21, h21, i21, j21, k21] #b21
 create_edges(G, nodelist_21)
 stoplights_list.append(c21)
-
+rendering_list.append(j21)
+rendering_list.append(k21)
 
 #List from 2 to 3 (turn its right) -> window left
 e23 = Node(point_converter(6.3140487565915,-4.6816058033434)) #R2
@@ -109,12 +130,12 @@ e24.node_list.append(a14)
 
 #List from 3 to 4 (straight) -> left to right
 a34 = InitialNode(point_converter(0.0623327235562,-3.6568860011995), 1) #R1
-b34 = Node(point_converter(3.6162345714634,-5.1395906086797)) #N1
+b34 = Node(point_converter(1.5162345714634,-4.4395906086797)) #N1
 c34 = Stoplight(point_converter(5.36420836424,-5.6743050384899)) #U1
 d34 = Node(point_converter(6.10661293896,-5.770921111209)) #K1
-e34 = ListNode(point_converter(6.6920561434004,-5.7721158744567)) #P1
+e34 = Node(point_converter(6.6920561434004,-5.7721158744567)) #P1 #List
 f34 = Node(point_converter(6.9207563500377,-5.771170811574)) #J1
-g34 = ListNode(point_converter(7.4619308275128,-5.7617776331923)) #O
+g34 = Node(point_converter(7.4619308275128,-5.7617776331923)) #O #List
 nodelist_34 = [a34, b34, c34, d34, e34, f34, g34, b14]
 create_edges(G, nodelist_34)
 stoplights_list.append(c34)
@@ -138,9 +159,9 @@ a43 = InitialNode(point_converter(14.0354126046239,-4.9917068968246), 1) #L2
 b43 = Node(point_converter(12.8279649228097,-4.9499583244175)) #V
 c43 = Stoplight(point_converter(8.2440191175245,-4.8936596312794)) #N2
 d43 = Node(point_converter(7.6980780075727,-4.8852894167466)) #R
-e43 = ListNode(point_converter(7.3601685154079,-4.8764639548107)) #W1
+e43 = Node(point_converter(7.3601685154079,-4.8764639548107)) #W1 #List
 f43 = Node(point_converter(7.1458469367752,-4.8774079402132)) #O2
-g43 = ListNode(point_converter(6.468678699198,-4.8780178654791)) #N
+g43 = Node(point_converter(6.468678699198,-4.8780178654791)) #N #List
 nodelist_43 = [a43, b43, c43, d43, e43, f43, g43, d13]
 create_edges(G, nodelist_43)
 stoplights_list.append(c43)
@@ -192,28 +213,28 @@ cl22 = Car_list()
 cl23 = Car_list()
 cl24 = Car_list()
 
-e12.append_car_list(cl1)
-g12.append_car_list(cl2)
-i12.append_car_list(cl3)
+#e12.append_car_list(cl1)
+#g12.append_car_list(cl2)
+#i12.append_car_list(cl3)
 a13.append_car_list(cl4)
-e13.append_car_list(cl5)
+#e13.append_car_list(cl5)
 a14.append_car_list(cl6)
-c14.append_car_list(cl7)
-e21.append_car_list(cl8)
-g21.append_car_list(cl9)
+#c14.append_car_list(cl7)
+#e21.append_car_list(cl8)
+#g21.append_car_list(cl9)
 d24.append_car_list(cl10)
 a12.append_car_list(cl11)
 a21.append_car_list(cl12)
 a34.append_car_list(cl13)
 a43.append_car_list(cl14)
-e34.append_car_list(cl15)
-g34.append_car_list(cl16)
+#e34.append_car_list(cl15)
+#g34.append_car_list(cl16)
 a31.append_car_list(cl17)
 c31.append_car_list(cl18)
 a32.append_car_list(cl19)
 c32.append_car_list(cl20)
-e43.append_car_list(cl21)
-g43.append_car_list(cl22)
+#e43.append_car_list(cl21)
+#g43.append_car_list(cl22)
 a42.append_car_list(cl23)
 a41.append_car_list(cl24)
 
@@ -221,6 +242,9 @@ a41.append_car_list(cl24)
 
 car_list = [cl1, cl2, cl3, cl4, cl5, cl6, cl7, cl8, cl9, cl10, cl11, 
             cl12, cl13, cl14, cl15, cl16, cl17, cl18, cl19, cl20, cl21, cl22, cl23, cl24]
-forbidden_paths = [(a21, k12), (a12, k21), (a34,h13), (a43, e14)]
-starting_points = [a12, a21, a34, a43]
-ending_points = [k12, h13, e14, k21]
+
+#paths are tuple of (start_node, end_node, spawn_rate)
+paths = [(a12, h13, 0.005), (a12, e14, 0.01166666666), (a12, k12, 0.075), 
+         (a21, k21, 0.115), (a21, h13, 0.00333333333), (a21, e14, 0.01833333333), 
+         (a34, k12, 0.01833333333), (a34, k21, 0.01166666666), (a34, e14, 0.03666666666), 
+         (a43, k12, 0.01833333333), (a43, h13, 0.06333333333), (a43, k21, 0.02333333333)]

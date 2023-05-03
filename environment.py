@@ -1,32 +1,56 @@
-import pygame
 import random
 import math
 import numpy as np
 from car import *
 from nodes import *
-import graph
+from graph import stoplights_list, car_list, rendering_list, paths, G
 from config import *
 import networkx as nx
+from copy import deepcopy
 
 class Environment:
     def __init__(self):
-        self.stop_lists = graph.stoplights_list.copy()
-        self.car_lists = graph.car_list.copy()
+        self.car_lists = car_list.copy()
+        self.stop_lists = stoplights_list.copy()
+        self.graph = G.copy()
         self.average_time = 0
         self.screen = None
         self.background_image = None
         self.font = None
+        self.is_render = False
+        self.kill_count = 0.0000000001
 
     def restart(self):
-        self.stop_lists = graph.stoplights_list.copy()
-        self.car_lists = graph.car_list.copy()
+        self.flush()
         self.average_time = 0
         self.screen = None
         self.background_image = None
         self.font = None
+        self.is_render = False
+        if self.is_render:
+            pygame.display.quit()
+        self.kill_count = 0.0000000001
+
+    def flush(self):
+        for cl in self.car_lists:
+            cl.head = None
+            cl.tail = None
+        
+        for node in G.nodes():
+            node.queue = set()
+
+        for stoplight in self.stop_lists:
+            stoplight.red = stoplight.start_red
+            stoplight.get_color()
+            stoplight.wait = -1
 
     def render(self):
-        if not pygame.display.get_init():
+        if not self.is_render:
+            global pygame
+            import pygame
+            self.is_render = True
+            
+        #if not pygame.display.get_init():
             pygame.init()
             self.screen = pygame.display.set_mode((MONITOR_WIDTH, MONITOR_HEIGHT))
             pygame.display.set_caption("Traffic Simulation")
@@ -41,14 +65,14 @@ class Environment:
 
         self.screen.blit(self.background_image, (0, 0))
 
-        for stoplight in graph.stoplights_list:
+        for stoplight in self.stop_lists:
             pygame.draw.circle(self.screen, stoplight.color, stoplight.pos, 8)
             # render and blit number beside stoplight
             text = self.font.render(str(len(stoplight.queue)), True, (0, 0, 0))
             self.screen.blit(text, (stoplight.pos[0]+10, stoplight.pos[1]-10))
 
         #updating car positions
-        for cl in graph.car_list:
+        for cl in self.car_lists:
             if cl.tail != None:
                 car = cl.tail
                 while car != None:
@@ -58,37 +82,36 @@ class Environment:
         pygame.display.update()
 
     def step(self, switch_stoplights = False):
-        
-        if switch_stoplights:
-            for stoplight in graph.stoplights_list:
-                #updating stoplights
+
+        for stoplight in self.stop_lists:
+            if switch_stoplights:
+                if stoplight.red:
+                    stoplight.wait = 5*32
+                else:
+                    stoplight.step()
+            if stoplight.wait == 0:
                 stoplight.step()
+            if stoplight.wait >= 0:
+                stoplight.wait -= 1
 
         #cars enter the system
-        if min(np.random.poisson(0.01*3), 1) == 1:
-            #random sampling from entrances and exits (repeated if the entrance/exit is the same)
-            starting_points_frequencies = np.array([x.frequency for x in graph.starting_points])
-            ending_points_frequencies = np.array([x.frequency for x in graph.ending_points])
+        for path in paths:
+            if min(np.random.poisson(path[2]/32), 1) == 1: #/32
+                #get the shortest path between entrance and exit
+                shortest_path = nx.shortest_path(G, path[0], path[1])
 
-            starting_point = np.random.choice(graph.starting_points, p = starting_points_frequencies/starting_points_frequencies.sum())
-            ending_point = np.random.choice(graph.ending_points, p = ending_points_frequencies/ending_points_frequencies.sum())
-
-            while (starting_point, ending_point) in graph.forbidden_paths:
-                starting_point = np.random.choice(graph.starting_points, p = starting_points_frequencies/starting_points_frequencies.sum())
-                ending_point = np.random.choice(graph.ending_points, p = ending_points_frequencies/ending_points_frequencies.sum())
-
-            #get the shortest path between entrance and exit
-            shortest_path = nx.shortest_path(graph.G, starting_point, ending_point)
-
-            #append a car at the entrance list with the shortest path
-            shortest_path[0].car_list.front_append(Car(shortest_path))
+                #append a car at the entrance list with the shortest path
+                shortest_path[0].car_list.front_append(Car(shortest_path))
 
         #updating car positions
-        for cl in graph.car_list:
-            if cl.head != None:
-                car = cl.head
+        for cl in self.car_lists:
+            if cl.tail != None:
+                car = cl.tail
                 while car != None:
-                    car.step()
-                    car = car.next
+                    time = car.step()
+                    if time != 0:
+                        self.average_time += time
+                        self.kill_count += 1
+                    car = car.prev
         
-        return self.average_time
+        return [self.average_time/self.kill_count] + [len(stoplight.queue) for stoplight in self.stop_lists]

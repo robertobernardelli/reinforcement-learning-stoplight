@@ -10,7 +10,7 @@ class Car:
         self.prev = None
         self.path = path
         self.list_index = 0 #which node of the path connects the current linked list of cars
-        self.pos_index = 1 #node of the path the car is reffering to as next_node
+        self.pos_index = 1 #node of the path the car is referring to as next_node
         self.next_node = path[self.pos_index]
         self.next_node.queue.add(self)
         self.distance = self.determine_distance()
@@ -18,9 +18,9 @@ class Car:
         self.time = 0
         self.killed = False
         
-        self.speed = SPEED
-        self.max_speed = MAX_SPEED
-        self.acceleration = ACCELERATION
+        self.speed = np.random.normal(SPEED, SPEED/20)
+        self.max_speed = np.random.normal(MAX_SPEED, MAX_SPEED/20)
+        self.acceleration = np.random.normal(ACCELERATION, ACCELERATION/20)
         self.lookahead = self.speed * LOOKAHEAD
    
         self.color = (255, 255, 255)
@@ -85,7 +85,7 @@ class Car:
             self.speed = min(self.speed+self.acceleration, self.max_speed)
             
         self.distance = new_distance
-        self.lookahead = self.speed * 20
+        self.lookahead = self.speed * LOOKAHEAD
         self.pos = self.pos + (self.speed*self.direction)
         return 0 #either 0 or the total time spent on this earth
     
@@ -123,5 +123,5 @@ class Car_list:
             self.tail = None
             return
         
-        self.tail = self.tail.prev
+        self.tail = car.prev
         self.tail.next = None

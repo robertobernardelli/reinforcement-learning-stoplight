@@ -39,8 +39,10 @@ class Stoplight(YieldNode):
     """
     def __init__(self, pos, red = False):
         super().__init__(pos)
+        self.start_red = red
         self.red = red
         self.get_color()
+        self.wait = -1
 
     def step(self):
         self.red = not self.red
