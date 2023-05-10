@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 def main():
 
-    env = StoplightEnv(render=False, debug=False, limit_fps=True)
+    env = StoplightEnv(render=False, debug=True)
     env.reset()
 
     episodes = 10
@@ -15,7 +15,7 @@ def main():
         obs = env.reset()
         done = False
         while not done:
-            action = env.action_space.sample()
+            action = 1
             obs, rewards, done, info = env.step(action)
             print(obs)
         waiting_times.append(info['average_waiting_time'])

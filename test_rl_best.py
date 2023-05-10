@@ -1,12 +1,16 @@
 import gym
 from gym_env import StoplightEnv
 from tqdm import tqdm
+from stable_baselines3 import PPO
 
 def main():
 
-    env = StoplightEnv(render=False, debug=False, limit_fps=True)
+    env = StoplightEnv(render=False, debug=False, limit_fps=False)
     env.reset()
 
+    model_path = "models/1683139451/5800.zip"
+    model = PPO.load(model_path, env=env)
+    
     episodes = 10
 
     waiting_times = []
@@ -15,9 +19,9 @@ def main():
         obs = env.reset()
         done = False
         while not done:
-            action = env.action_space.sample()
+            action, _states = model.predict(obs)
             obs, rewards, done, info = env.step(action)
-            print(obs)
+            print(rewards)
         waiting_times.append(info['average_waiting_time'])
     env.close()
     
