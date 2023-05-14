@@ -4,7 +4,8 @@ import math
 import nodes
 
 class Car:
-    def __init__(self, path):
+    def __init__(self, path, id):
+        self.id = id
         self.pos = path[0].pos
         self.next = None
         self.prev = None
@@ -16,13 +17,13 @@ class Car:
         self.distance = self.determine_distance()
         self.direction = self.get_direction()
         self.time = 0
-        self.killed = False
         
-        self.speed = np.random.normal(SPEED, SPEED/20)
+        #we assume that the speed of the car is normally distributed and has 5% standard deviation
+        self.speed = np.random.normal(SPEED, SPEED/20) 
         self.max_speed = np.random.normal(MAX_SPEED, MAX_SPEED/20)
         self.acceleration = np.random.normal(ACCELERATION, ACCELERATION/20)
         self.lookahead = self.speed * LOOKAHEAD
-   
+    
         self.color = (255, 255, 255)
 
     def determine_distance(self):
@@ -43,30 +44,14 @@ class Car:
         return direction_not_norm/np.sqrt(np.sum((direction_not_norm)**2))
         
     def angle_between_vectors(self, a, b):
-        return np.arccos(np.clip(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)), -1.0, 1.0))
+        return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
     def step(self):
         self.time += 1
         new_distance = self.determine_distance()
-
-        #kill
-        if isinstance(self.next_node, nodes.FinalNode):
-            try:
-                self.path[self.list_index].car_list.remove_last(self)
-                self.list_index = self.pos_index
-                if self.killed:
-                    return 0
-                else:
-                    return self.time
-            except:
-                if self.killed:
-                    return 0
-                else:
-                    self.killed = True
-                    return self.time
         
         #new stoplight
-        if self.angle_between_vectors(self.next_node.pos - self.pos, self.direction) > np.pi/2:
+        if self.angle_between_vectors(self.next_node.pos - self.pos, self.direction) < 0.7:
             self.next_node.queue.remove(self)
             self.pos_index += 1
             self.next_node = self.path[self.pos_index]
@@ -75,9 +60,15 @@ class Car:
 
             #if the new stoplight is a ListNode
             if isinstance(self.next_node, nodes.ListNode):
-                self.path[self.list_index].car_list.remove_last(self)
+                self.path[self.list_index].car_list.remove_car(self)
                 self.list_index = self.pos_index
                 self.path[self.list_index].car_list.front_append(self)
+
+        #kill
+        if isinstance(self.next_node, nodes.FinalNode):
+            self.path[self.list_index].car_list.remove_car(self)
+            self.list_index = self.pos_index
+            return self.time
 
         if new_distance < self.lookahead + SAFETY_DISTANCE:
             self.speed = max(self.speed/2, 0)
@@ -88,40 +79,3 @@ class Car:
         self.lookahead = self.speed * LOOKAHEAD
         self.pos = self.pos + (self.speed*self.direction)
         return 0 #either 0 or the total time spent on this earth
-    
-class Car_list:
-    
-    def __init__(self):
-        self.head = None
-        self.tail = None
-        
-    def __repr__(self):
-        lst = []
-        self._aid_repr(self.head, lst)
-        return ' '.join(lst)
-    
-    def _aid_repr(self, node, lst):
-        if node:
-            lst.append(str(node.pos))
-            self._aid_repr(node.next, lst)
-        
-    def front_append(self, car):
-        #appending the car
-        if self.head == None:
-            self.head = car
-            self.tail = car
-            return
-        
-        self.head.prev = car
-        car.next = self.head
-        self.head = car
-
-    def remove_last(self, car):
-        #removing the car
-        if self.head == car:
-            self.head = None
-            self.tail = None
-            return
-        
-        self.tail = car.prev
-        self.tail.next = None

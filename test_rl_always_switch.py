@@ -7,7 +7,7 @@ def main():
     env = StoplightEnv(render=False, debug=True)
     env.reset()
 
-    episodes = 10
+    episodes = 100
 
     waiting_times = []
     

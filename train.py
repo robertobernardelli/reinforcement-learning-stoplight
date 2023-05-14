@@ -28,17 +28,19 @@ if not os.path.exists(logdir):
 env = StoplightEnv(debug=False, render=False)
 env.reset()
 
-model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=logdir)
+model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=logdir, n_steps = 2048)
 
-TIMESTEPS = 100
+TIMESTEPS = 2048*10 # every 10 internal state updates, we save the model
 iters = 0
 best_average_reward = -float("inf")
 while True:
     iters += 1
     model.learn(
-        total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name=f"PPO"
+        total_timesteps=TIMESTEPS, tb_log_name=f"PPO", progress_bar=True
     )
 
+    print(f"Learning finished, total timesteps: {TIMESTEPS}")
+    print('Starting evaluation of model')
     # Calculate average reward over some number of episodes
     avg_reward = calculate_average_reward(model, env, num_episodes=3)
     model.save(f"{models_dir}/{TIMESTEPS*iters}")

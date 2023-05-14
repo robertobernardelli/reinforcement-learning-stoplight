@@ -17,7 +17,7 @@ class StoplightEnv(gym.Env):
         # these low and high parameters are for sanity check, they could be np.inf and -np.inf
         # the shape is the number of inputs in the observation space
         self.observation_space = spaces.Box(
-            low=-1000, high=1000, shape=(4,), dtype=np.float32
+            low=0, high=1000, shape=(4,), dtype=np.float32
         )
         
         self.render_required = render
@@ -46,29 +46,29 @@ class StoplightEnv(gym.Env):
         if self.debug_required:
             print(f'Action: {switch_stoplight}')
         
-        if switch_stoplight == 0 or self.steps_since_last_switch < (32*5):
+        if switch_stoplight == 0:
+            # if we get a 0 action, we do nothing for 1 step
             obs = self.intersection.step(switch_stoplights=False)
             self.render()
             self.time += 1
             self.steps_since_last_switch += 1
             
-        else: # switch_stoplight == 1 and self.steps_since_last_switch >= (32*5)
+        else: # switch_stoplight == 1
             obs = self.intersection.step(switch_stoplights=True)
-            self.stoplight_switched = not self.stoplight_switched
+            self.stoplight_switched =  abs(self.stoplight_switched - 1) # 0 -> 1, 1 -> 0
             self.steps_since_last_switch = 0
             self.render()
             self.time += 1
             
-        # The agent needs to wait for 1 second before doing another action
-        for _ in range(10*32-1): # 1 seconds = 32 timesteps (minus 1 because we already did 1 step above)
+        # The agent needs to wait for 10 seconds before doing another action
+        waiting_time = 10*32
+        for _ in range(waiting_time-1): # (minus 1 because we already did 1 step above)
             obs = self.intersection.step(switch_stoplights=False)
             self.render()
             self.time += 1
             self.steps_since_last_switch += 1
 
         avg_waiting_time = obs[0]
-
-        self.total_reward = -avg_waiting_time
 
         waiting_cars0 = obs[1]
         waiting_cars1 = obs[2]
@@ -84,12 +84,17 @@ class StoplightEnv(gym.Env):
             waiting_north_south,
             waiting_east_west,
             self.stoplight_switched,
-            self.steps_since_last_switch
+            self.steps_since_last_switch // waiting_time
         ]
+        
+        observation = np.array(observation).astype("float32")
 
         info = {'average_waiting_time': avg_waiting_time}
+        
+        #self.total_reward = -avg_waiting_time
+        self.total_reward = - (waiting_north_south + waiting_east_west)**2
 
-        if self.time > 32*60*10:
+        if self.time >= 32*60*3: # each episode is 3 minutes long, for a total of 18 actions
             self.done = True
 
 
@@ -97,12 +102,15 @@ class StoplightEnv(gym.Env):
 
     def reset(self):
         
+        if self.debug_required:
+            print('Resetting environment')
+        
         self.intersection.restart()
         
-        self.stoplight_switched = False
+        self.stoplight_switched = 0
         self.steps_since_last_switch = 0
         
-        self.dt = datetime.datetime.now()
+        self.dt = datetime.datetime.now() # for limiting fps
 
         self.done = False
 

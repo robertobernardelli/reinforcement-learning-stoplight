@@ -4,10 +4,10 @@ from tqdm import tqdm
 
 def main():
 
-    env = StoplightEnv(render=False, debug=False, limit_fps=True)
+    env = StoplightEnv(render=False, debug=False, limit_fps=False)
     env.reset()
 
-    episodes = 10
+    episodes = 100
 
     waiting_times = []
     

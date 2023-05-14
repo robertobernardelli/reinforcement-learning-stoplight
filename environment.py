@@ -3,14 +3,14 @@ import math
 import numpy as np
 from car import *
 from nodes import *
-from graph import stoplights_list, car_list, rendering_list, paths, G
+from graph import stoplights_list, nodes_with_list, rendering_list, paths, G
 from config import *
 import networkx as nx
 from copy import deepcopy
 
 class Environment:
     def __init__(self):
-        self.car_lists = car_list.copy()
+        self.nodes_with_list = nodes_with_list.copy()
         self.stop_lists = stoplights_list.copy()
         self.graph = G.copy()
         self.average_time = 0
@@ -19,6 +19,7 @@ class Environment:
         self.font = None
         self.is_render = False
         self.kill_count = 0.0000000001
+        self.cars = []
 
     def restart(self):
         self.flush()
@@ -32,9 +33,11 @@ class Environment:
         self.kill_count = 0.0000000001
 
     def flush(self):
-        for cl in self.car_lists:
-            cl.head = None
-            cl.tail = None
+        self.cars = []
+
+        for node in self.nodes_with_list:
+            node.car_list.head = None
+            node.car_list.tail = None
         
         for node in G.nodes():
             node.queue = set()
@@ -71,13 +74,12 @@ class Environment:
             text = self.font.render(str(len(stoplight.queue)), True, (0, 0, 0))
             self.screen.blit(text, (stoplight.pos[0]+10, stoplight.pos[1]-10))
 
+        for node in rendering_list:
+            pygame.draw.circle(self.screen, (0, 0, 0), node.pos, 6)
+
         #updating car positions
-        for cl in self.car_lists:
-            if cl.tail != None:
-                car = cl.tail
-                while car != None:
-                    pygame.draw.circle(self.screen, car.color, car.pos, 4)
-                    car = car.prev
+        for car in self.cars:
+            pygame.draw.circle(self.screen, car.color, car.pos, 4)
 
         pygame.display.update()
 
@@ -101,17 +103,15 @@ class Environment:
                 shortest_path = nx.shortest_path(G, path[0], path[1])
 
                 #append a car at the entrance list with the shortest path
-                shortest_path[0].car_list.front_append(Car(shortest_path))
+                new_car = Car(shortest_path, np.random.random_integers(0, 10000000000))
+                self.cars.append(new_car)
+                shortest_path[0].car_list.front_append(new_car)
 
-        #updating car positions
-        for cl in self.car_lists:
-            if cl.tail != None:
-                car = cl.tail
-                while car != None:
-                    time = car.step()
-                    if time != 0:
-                        self.average_time += time
-                        self.kill_count += 1
-                    car = car.prev
-        
+        for car in self.cars:
+            time = car.step()
+            if time != 0:
+                self.average_time += time
+                self.kill_count += 1
+                self.cars.remove(car)
+
         return [self.average_time/self.kill_count] + [len(stoplight.queue) for stoplight in self.stop_lists]

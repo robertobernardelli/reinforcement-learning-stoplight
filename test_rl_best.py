@@ -8,10 +8,10 @@ def main():
     env = StoplightEnv(render=False, debug=False, limit_fps=False)
     env.reset()
 
-    model_path = "models/1683139451/5800.zip"
+    model_path = "models/1683883765/1228800.zip"
     model = PPO.load(model_path, env=env)
     
-    episodes = 10
+    episodes = 100
 
     waiting_times = []
     

@@ -22,10 +22,10 @@ def change_pace(switch):
 render = False
 dt = datetime.datetime.now()
 waiting_times = []
-episodes = 10
+episodes = 100
 for i in tqdm(range(episodes)):
     timestep = 1
-    for _ in range(32*60*15):
+    for _ in range(32*60*3):
         if timestep % switch == 0:
             intersection1.step(switch_stoplights = True)
             change_pace(switch)
