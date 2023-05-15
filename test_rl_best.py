@@ -5,7 +5,7 @@ from stable_baselines3 import PPO
 
 def main():
 
-    env = StoplightEnv(render=False, debug=False, limit_fps=False)
+    env = StoplightEnv(render=True, debug=False, limit_fps=True)
     env.reset()
 
     model_path = "models/1683883765/1228800.zip"
