@@ -32,8 +32,8 @@ for i in tqdm(range(episodes)):
             timestep = 1
         obs = intersection1.step()
         if render:
-            while (datetime.datetime.now() - dt).total_seconds() < 1/32:
-                time.sleep(0.01)
+            #while (datetime.datetime.now() - dt).total_seconds() < 1/32:
+            #    time.sleep(0.01)
             dt = datetime.datetime.now()
             intersection1.render()
         timestep += 1
