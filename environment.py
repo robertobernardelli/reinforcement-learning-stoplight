@@ -6,7 +6,6 @@ from nodes import *
 from graph import stoplights_list, nodes_with_list, rendering_list, paths, G
 from config import *
 import networkx as nx
-from copy import deepcopy
 
 class Environment:
     def __init__(self):
@@ -32,6 +31,7 @@ class Environment:
             pygame.display.quit()
         self.kill_count = 0.0000000001
 
+    #flushes the environment of all cars and resets the stoplights
     def flush(self):
         self.cars = []
 
