@@ -19,7 +19,7 @@ def change_pace(switch):
     else:
         switch = 45*32
         
-render = False
+render = True
 dt = datetime.datetime.now()
 waiting_times = []
 episodes = 100

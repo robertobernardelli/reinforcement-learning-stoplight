@@ -46,6 +46,7 @@ class Stoplight(YieldNode):
         self.red = not self.red
         self.get_color()
 
+    #switches the color of the stoplight from red to green and vice versa
     def get_color(self):
         if self.red == True:
             self.color = (255, 0, 0)
@@ -67,11 +68,11 @@ class FinalNode(Node):
         super().__init__(pos, name)
 
 class CarList:
-    
     def __init__(self):
         self.head = None
         self.tail = None
         
+    #this method is used to print the linked list
     def __repr__(self):
         lst = []
         self._aid_repr(self.head, lst)

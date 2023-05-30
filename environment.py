@@ -6,32 +6,38 @@ from nodes import *
 from graph import stoplights_list, nodes_with_list, rendering_list, paths, G
 from config import *
 import networkx as nx
-from copy import deepcopy
 
 class Environment:
     def __init__(self):
+        #copying assets from graph.py
         self.nodes_with_list = nodes_with_list.copy()
         self.stop_lists = stoplights_list.copy()
         self.graph = G.copy()
+        
+        #initializing environment variables
         self.average_time = 0
+        self.kill_count = 0.0000000001 #to avoid division by zero
+        self.cars = []
+
+        #rendering variables
         self.screen = None
         self.background_image = None
         self.font = None
         self.is_render = False
-        self.kill_count = 0.0000000001
-        self.cars = []
 
     def restart(self):
         self.flush()
         self.average_time = 0
+        self.kill_count = 0.0000000001
         self.screen = None
         self.background_image = None
         self.font = None
         self.is_render = False
         if self.is_render:
             pygame.display.quit()
-        self.kill_count = 0.0000000001
+        
 
+    #flush the environment of all cars and reset the stoplights
     def flush(self):
         self.cars = []
 
@@ -53,7 +59,6 @@ class Environment:
             import pygame
             self.is_render = True
             
-        #if not pygame.display.get_init():
             pygame.init()
             self.screen = pygame.display.set_mode((MONITOR_WIDTH, MONITOR_HEIGHT))
             pygame.display.set_caption("Traffic Simulation")
@@ -68,16 +73,18 @@ class Environment:
 
         self.screen.blit(self.background_image, (0, 0))
 
+        #rendering stoplights
         for stoplight in self.stop_lists:
             pygame.draw.circle(self.screen, stoplight.color, stoplight.pos, 8)
             # render and blit number beside stoplight
             text = self.font.render(str(len(stoplight.queue)), True, (0, 0, 0))
             self.screen.blit(text, (stoplight.pos[0]+10, stoplight.pos[1]-10))
 
+        #rendering nodes if they are in the rendering list for debugging
         for node in rendering_list:
             pygame.draw.circle(self.screen, (0, 0, 0), node.pos, 6)
 
-        #updating car positions
+        #rendering cars
         for car in self.cars:
             pygame.draw.circle(self.screen, car.color, car.pos, 4)
 
@@ -85,6 +92,7 @@ class Environment:
 
     def step(self, switch_stoplights = False):
 
+        #stoplights switch
         for stoplight in self.stop_lists:
             if switch_stoplights:
                 if stoplight.red:
@@ -107,6 +115,7 @@ class Environment:
                 self.cars.append(new_car)
                 shortest_path[0].car_list.front_append(new_car)
 
+        #cars move
         for car in self.cars:
             time = car.step()
             if time != 0:
@@ -114,4 +123,5 @@ class Environment:
                 self.kill_count += 1
                 self.cars.remove(car)
 
+        #return the average waiting time and the number of cars in each stoplight queue
         return [self.average_time/self.kill_count] + [len(stoplight.queue) for stoplight in self.stop_lists]

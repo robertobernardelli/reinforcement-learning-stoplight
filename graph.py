@@ -20,6 +20,7 @@ G = nx.MultiDiGraph()
 stoplights_list = [] #this is an extra list: here we will append only the true stoplights
 rendering_list = [] #this list can be used if we eant to check the position of some nodes
 
+#function to create edges between nodes
 def create_edges(graph, nodelist):
     graph.add_nodes_from(nodelist)
     for i in range(len(nodelist)-1):
