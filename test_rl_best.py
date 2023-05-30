@@ -5,7 +5,7 @@ from stable_baselines3 import PPO
 
 def main():
 
-    env = StoplightEnv(render=True, debug=False, limit_fps=True)
+    env = StoplightEnv(render=False, debug=False, limit_fps=False)
     env.reset()
 
     model_path = "models/1683883765/1228800.zip"
@@ -21,7 +21,7 @@ def main():
         while not done:
             action, _states = model.predict(obs)
             obs, rewards, done, info = env.step(action)
-            print(rewards)
+            #print(rewards)
         waiting_times.append(info['average_waiting_time'])
     env.close()
     
