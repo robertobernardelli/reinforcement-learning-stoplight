@@ -59,7 +59,6 @@ class Environment:
             import pygame
             self.is_render = True
             
-        #if not pygame.display.get_init():
             pygame.init()
             self.screen = pygame.display.set_mode((MONITOR_WIDTH, MONITOR_HEIGHT))
             pygame.display.set_caption("Traffic Simulation")
